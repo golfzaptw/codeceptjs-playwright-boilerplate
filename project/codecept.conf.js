@@ -19,10 +19,10 @@ let playwrightConfig = {
     url: testData.homePageUrl,
     show: !isHeadless,
     restart: true,
-    basicAuth: {
-        username: process.env.USERNAME_HOST,
-        password: process.env.PASSWORD_HOST,
-    },
+    // basicAuth: {
+    //     username: process.env.USERNAME_HOST,
+    //     password: process.env.PASSWORD_HOST,
+    // },
     waitForNavigation: 'networkidle0',
     waitForTimeout: 30000,
     getPageTimeout: 60000,
