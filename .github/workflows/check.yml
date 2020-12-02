@@ -24,27 +24,48 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+      - name: Get cache dependencies package.json
+        uses: actions/cache@preview
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Get cache dependencies ruby
+        uses: actions/cache@preview
+        id: cache-ruby
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gem-
       - name: Install yarn
         run: cd project && yarn
       - name: Remove and move folder .git
         run: |
           rm -rf ./project/.git
           cp -a .git project/
-      - name: Install bundle and execute danger
-        run: |
-          cd project 
-          gem install bundler
-          bundle install --path vendor/bundle
-          bundle exec danger
+      - name: Install bundler
+        run: cd project && gem install bundler
+      - name: Install path bundle
+        if: steps.cache-ruby.outputs.cache-hit != 'true'
+        run: cd project && bundle install --path vendor/bundle
+      - name: Execute danger
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Approve pull request from release
+        run: |
+          cd project
+          bundle --path vendor/bundle
+          bundle exec danger
+      - name: Auto reviews branches
         uses: golfzaptw/action-auto-reviews-from-branches@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          EVENT_TYPE: "APPROVE"
-          BRANCHES: "release/*"
-          AUTHOR: "dependabot-preview[bot], dependabot[bot], golfzaptw"
-          MESSAGE: "Nice approve github bot 🏳️‍🌈🙏."
+          EVENT_TYPE: APPROVE
+          BRANCHES: release/*
+          AUTHOR: 'dependabot-preview[bot], dependabot[bot], golfzaptw'
