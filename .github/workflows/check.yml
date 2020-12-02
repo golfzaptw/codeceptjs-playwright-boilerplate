@@ -1,0 +1,60 @@
+name: QA checking code
+
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Install yarn
+        run: cd project && yarn
+      - name: QA check
+        run: |
+          cd project
+          yarn lint
+          yarn prettier
+      - name: Notification to slack
+        uses: 8398a7/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          author_name: ${{ github.repository }}
+          mention: "golf"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+  danger:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Install yarn
+        run: cd project && yarn
+      - name: Remove and move folder .git
+        run: |
+          rm -rf ./project/.git
+          cp -a .git project/
+      - name: Install bundle and execute danger
+        run: |
+          cd project 
+          gem install bundler
+          bundle install --path vendor/bundle
+          bundle exec danger
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Approve pull request from release
+        uses: golfzaptw/action-auto-reviews-from-branches@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+          EVENT_TYPE: "APPROVE"
+          BRANCHES: "release/*"
+          AUTHOR: "dependabot-preview[bot], dependabot[bot], golfzaptw"
+          MESSAGE: "Nice approve github bot 🏳️‍🌈🙏."

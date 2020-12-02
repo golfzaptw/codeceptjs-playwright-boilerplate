@@ -1,0 +1,24 @@
+{
+  "name": "generator-codeceptjs-playwright-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "files": [
+    "project",
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/golfzaptw/codeceptjs-playwright-boilerplate.git"
+  },
+  "homepage": "https://github.com/golfzaptw/codeceptjs-playwright-boilerplate#readme",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "yeoman-generator": "^4.12.0"
+  }
+}
