@@ -16,7 +16,7 @@ const mobileDevice = config.mobileDevice
 setHeadlessWhen(isHeadless)
 
 let playwrightConfig = {
-    url: testData.homePageURL,
+    url: testData.homePageUrl,
     show: !isHeadless,
     restart: true,
     basicAuth: {
