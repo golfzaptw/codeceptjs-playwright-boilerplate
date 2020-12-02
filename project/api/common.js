@@ -13,12 +13,12 @@ class ApiUtils {
      * statusCodeShouldBe(response.status, 401, 'Your status equal 401', 'blue')
      * ```
      */
-    statusCodeShouldBe(
-        {statusCode,
+    statusCodeShouldBe({
+        statusCode,
         expectedStatusCode = 200,
         message = null,
-        messageColor = 'green',}
-    ) {
+        messageColor = 'green',
+    }) {
         if (statusCode !== expectedStatusCode) {
             throw new Error(`${statusCode} is not equal ${expectedStatusCode}`)
         }
